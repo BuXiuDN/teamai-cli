@@ -213,3 +213,32 @@ export function summarizeTrendWindow(
   }
   return { current: summarizePeriod(current), previous: summarizePeriod(previous) };
 }
+
+/** Session-cost cohorts use the first Stop day, including the session's known request costs.
+ * Sessions with no priced requests are excluded, rather than treated as free.
+ * Kept separate from request-day digest totals for backwards compatibility.
+ */
+export function summarizeSessionCosts(sessions: Map<string, DailySessionSnapshot>, now = new Date()): {
+  current: { avgSessionCostMicros: number | null; pricedSessions: number };
+  previous: { avgSessionCostMicros: number | null; pricedSessions: number };
+} {
+  const end = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) + 86_400_000;
+  const currentStart = end - 7 * 86_400_000;
+  const previousStart = currentStart - 7 * 86_400_000;
+  const totals = { current: { cost: 0, count: 0 }, previous: { cost: 0, count: 0 } };
+  for (const session of sessions.values()) {
+    const day = Date.parse(`${session.date}T00:00:00Z`);
+    if (!Number.isFinite(day) || day < previousStart || day >= end) continue;
+    const requests = Object.values(session.requestDaily);
+    const priced = requests.reduce((sum, request) => sum + request.pricedRequests, 0);
+    if (priced <= 0) continue;
+    const period = day >= currentStart ? totals.current : totals.previous;
+    period.count++;
+    period.cost += requests.reduce((sum, request) => sum + request.costMicros, 0);
+  }
+  const summarize = (period: { cost: number; count: number }) => ({
+    avgSessionCostMicros: period.count ? period.cost / period.count : null,
+    pricedSessions: period.count,
+  });
+  return { current: summarize(totals.current), previous: summarize(totals.previous) };
+}

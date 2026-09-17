@@ -310,9 +310,9 @@ function renderPromotionBlock(promote: PromotionCandidate[]): string {
       return [
         `<div class="maint-item">`,
         `  <div><strong>${escapeHtml(c.title)}</strong>`,
-        `    <span class="badge">${escapeHtml(c.suggestedCategory)}</span></div>`,
-        `  <div class="muted">Confidence: ${(c.confidence * 100).toFixed(0)}%`,
-        ` | Upvotes: ${c.upvotedCount} | Users: ${c.userCount}</div>`,
+        `    <span class="badge" data-i18n>${escapeHtml(c.suggestedCategory)}</span></div>`,
+        `  <div class="muted"><span data-i18n>Confidence</span>: ${(c.confidence * 100).toFixed(0)}%`,
+        ` | <span data-i18n>Upvotes</span>: ${c.upvotedCount} | <span data-i18n>Users</span>: ${c.userCount}</div>`,
         `  <code>${cmd}</code>`,
         `</div>`,
       ].join('');
@@ -338,8 +338,8 @@ function renderPruneBlock(prune: PruneCandidate[]): string {
       return [
         `<div class="maint-item">`,
         `  <div><strong>${escapeHtml(c.filename)}</strong></div>`,
-        `  <div class="muted">Confidence: ${(c.confidence * 100).toFixed(0)}%`,
-        ` | Last activity: ${activity} | Reason: ${escapeHtml(c.reason)}</div>`,
+        `  <div class="muted"><span data-i18n>Confidence</span>: ${(c.confidence * 100).toFixed(0)}%`,
+        ` | <span data-i18n>Last activity</span>: ${activity} | <span data-i18n>Reason</span>: ${escapeHtml(c.reason)}</div>`,
         `</div>`,
       ].join('');
     })
@@ -387,6 +387,16 @@ function renderMaintenanceSection(data: VizData): string {
   const prune = renderPruneBlock(data.maintenance.prune);
   const stale = renderStaleBlock(data.maintenance.stale);
   return `<section id="maintenance"><h2>Maintenance Console</h2>${promote}${prune}${stale}</section>`;
+}
+
+/** Reuse every existing KB report section inside the unified dashboard. */
+export function renderDashboardReport(data: VizData): { context: string; maintenance: string } {
+  return {
+    context: renderOverviewCards(data) + renderCoverageSection(data.coverage)
+      + renderTopRecalledSection(data.topRecalled) + renderSilentSection(data.silent)
+      + renderTrendSection(data.trend) + renderAuthorsSection(data.authors),
+    maintenance: renderMaintenanceSection(data),
+  };
 }
 
 // ─── CSS ──────────────────────────────────────────────────────────────────────
