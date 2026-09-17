@@ -60,6 +60,12 @@ teamai init https://<platform>/<org>/<repo>
 teamai init https://<platform>/<org>/<repo> --scope user
 ```
 
+**Set up all their AI tools by default (global rule 9).** Don't add `--agent` to
+restrict the install unless the user said to. Omitting it gives a picker — select
+**every AI tool already installed**. Afterwards, **tell the user (in their
+language) which agents will now auto-sync TeamAI**, and note any detected tool that
+was skipped and why.
+
 **Read-only / restricted environments (no Git access):** some sandboxed hosts
 cannot use Git. If the admin provides an HTTP endpoint + API key instead, use:
 

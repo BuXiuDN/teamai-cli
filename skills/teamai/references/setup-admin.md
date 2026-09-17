@@ -155,6 +155,14 @@ If the repo does not exist yet, `init` offers to create it — accept the prompt
 If the repo has roles enabled, `init` may ask for a primary role — pick one with
 the user, or pass `--role <id>` for a non-interactive run.
 
+**Which AI tools to set up — all of them by default (global rule 9).** Do not add
+`--agent` to restrict the install unless the user explicitly said to (e.g. "only
+Claude Code"). Omitting `--agent` gives an interactive picker — select **every AI
+tool already installed** on the machine. Then **report back which agents were set
+up**, in the user's language: name the tools that will now auto-start TeamAI, and
+any detected tool that was skipped and why (e.g. Codex trust-gate,
+CodeBuddy/WorkBuddy by design — see `troubleshooting.md`).
+
 ## Step 6 — Verify with doctor
 
 ```bash

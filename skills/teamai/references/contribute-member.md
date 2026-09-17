@@ -1,16 +1,21 @@
-# Scenario: Member — contribute skills & learnings
+# Scenario: Member — publish a reusable skill
 
-Goal: the user turns what they learned (a fix, a workflow, a reusable skill) into
-team knowledge everyone can pull.
+Goal: the user turns something they built into team knowledge everyone can pull.
 
 ## Which kind of contribution?
 
-- **A learning** (a lesson, a gotcha, how you solved something) → use
-  `teamai contribute` (Step A).
+- **A learning** (a lesson, a gotcha, how you solved something) → **use the
+  dedicated `teamai-share-learnings` skill**, not this flow. It summarizes the
+  current session and runs `teamai contribute` for you — far less work than writing
+  a doc by hand. (Step A below is only a fallback for when that skill isn't
+  available.)
 - **A reusable skill** (a `SKILL.md` others invoke) → author the skill, then
-  `teamai push` (Step B).
+  `teamai push` (Step B — the main purpose of this reference).
 
-## Step A — Contribute a learning
+## Step A — Contribute a learning by hand (fallback only)
+
+> Prefer the **`teamai-share-learnings`** skill. Use these manual steps only if it
+> is unavailable in the current tool.
 
 1. Write a short Markdown doc that captures the lesson. Keep it concrete and
    actionable — a knowledge base, not a diary. Include YAML frontmatter for search

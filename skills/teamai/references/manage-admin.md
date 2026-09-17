@@ -3,9 +3,14 @@
 The user already ran `teamai init`. Do NOT re-init or re-register. Before changing
 anything, say what you are about to change. Pick the task below that matches.
 
-## Publish a new skill / rule / doc
+Day-to-day management is mostly **publishing and updating team resources — skills,
+rules, MCP servers, and env** — plus inviting members and checking the dashboard.
 
-The user (or you) edits a skill or rule locally, then publishes it to the team:
+## Publish or update a skill / rule / doc
+
+The user (or you) creates or edits a skill, rule, or doc locally, then publishes it
+to the team. The same `teamai push` handles both new resources and updates to
+existing ones:
 
 ```bash
 teamai push            # review the diff, then confirm
@@ -15,6 +20,17 @@ teamai push --skill <path>   # push one specific skill
 
 Members receive it automatically the next time they open a session (or when they
 run `teamai pull`).
+
+## Publish or update team MCP servers
+
+```bash
+teamai mcp list        # team MCP servers + per-tool install status
+teamai mcp inject      # push team MCP servers into every AI tool's config
+teamai mcp remove      # remove teamai-managed MCP servers
+```
+
+MCP definitions travel with the team repo like skills/rules — edit, then the
+members pick them up on sync.
 
 ## Invite a member
 
@@ -50,6 +66,30 @@ teamai roles remove <id>     # remove a role
 After editing roles, `teamai push` to publish the manifest. Members re-sync on
 their next session.
 
+## Projects (manage several projects from one repo)
+
+`project` is a second dispatch dimension alongside `role` — one team repo can serve
+multiple projects, each with its own skills/rules/learnings, without a separate
+repo per project:
+
+```bash
+teamai projects list         # projects defined + the ones active in this directory
+teamai projects set <id>     # set the active project(s) for this directory
+teamai projects members <id> # who is registered on a project
+```
+
+A member gets the union of their role resources and their active project's
+resources. Admins declare projects in `manifest/projects.yaml`, then `teamai push`.
+
+## Team dashboard (web UI)
+
+```bash
+teamai dashboard             # start the AI coding session dashboard (default port 3721)
+teamai dashboard --port 8080 # custom port
+```
+
+Opens a local web UI for team coding-session activity and knowledge-base health.
+
 ## Team packages (npm + Claude plugins)
 
 Declare packages once; members get a prompt to install them (TeamAI never runs
@@ -79,12 +119,10 @@ has no session-start hook, they run `teamai pull` manually.
 
 ## Capture a lesson learned
 
-Turn a tricky fix into team knowledge — see `contribute-member.md` (works for
-admins too):
-
-```bash
-teamai contribute --file <path> --title "<title>"
-```
+To turn a tricky fix into team knowledge, use the dedicated **`teamai-share-learnings`**
+skill — it summarizes the current session and runs `teamai contribute` for you.
+(Publishing a **reusable skill** you authored is a different task — see
+`contribute-member.md`.)
 
 ## Don't
 

@@ -35,11 +35,14 @@ Usage examples (copy one to get started):
   🤝  Member — join an existing team:
       /teamai Help me join my team's TeamAI, repo URL is https://...
 
-  🔧  Admin — daily management:
+  🔧  Admin — daily management (publish & update skills, rules, MCP, env):
       /teamai I already have TeamAI set up, help me manage it
 
-  💡  Member — contribute skills & learnings:
-      /teamai I want to contribute what I learned to my team
+  📊  Anyone — open the team dashboard:
+      /teamai Open the TeamAI dashboard
+
+  💡  Member — contribute what you learned:
+      (use the "teamai-share-learnings" skill — it summarizes this session for you)
 
   🗑️  Anyone — remove TeamAI from this machine:
       /teamai Uninstall TeamAI
@@ -52,9 +55,16 @@ then open that reference file and follow it step by step.
 |-----------------------------------------------------|------------------------------------------|
 | Set up TeamAI for a team from scratch (create repo) | `references/setup-admin.md`              |
 | Join their team (with or without a repo URL)         | `references/join-member.md`              |
-| Manage a team they already set up (push, invite, …) | `references/manage-admin.md`             |
-| Share skills / learnings they discovered            | `references/contribute-member.md`        |
+| Manage a team: publish/update skills, rules, MCP, env, invite members | `references/manage-admin.md`  |
+| Publish a reusable skill they authored              | `references/contribute-member.md`        |
+| Open the team dashboard (web UI)                    | run `teamai dashboard` (see cheat sheet) |
 | Remove / uninstall TeamAI from this machine         | `references/uninstall.md`                |
+
+> **Sharing session learnings is a separate skill.** If the user wants to
+> contribute a lesson / gotcha / knowledge doc from what they just did, point them
+> to the **`teamai-share-learnings`** skill — it summarizes the current session and
+> runs `teamai contribute` for them. `contribute-member.md` here is only for
+> publishing a **reusable skill** the user authored.
 
 Choosing between "set up" and "join": a user **setting up a new team** becomes its
 admin and creates the repo; a user **joining an existing team** needs a repo URL
@@ -102,6 +112,15 @@ step, load `references/troubleshooting.md`.
    session-start hook that auto-runs `teamai pull`. It is normal that the skills/
    rules directories are empty right after init — they fill in when the user opens
    a fresh session in this tool. To sync immediately, run `teamai pull`.
+9. **Don't limit which AI tools get set up — cover all of them by default.** Unless
+   the user explicitly says "only install to Claude Code" (or names specific
+   tools), do **not** pass `--agent` to restrict the install. Let `teamai init` set
+   up **every AI tool already installed on the machine** (omitting `--agent` gives
+   an interactive picker; select all detected tools, or the user's stated subset).
+   **After init, report which agents were set up** — tell the user, in their
+   language, exactly which tools will now auto-start TeamAI (and which detected
+   tools were skipped and why, e.g. Codex trust-gate / CodeBuddy design). Verify
+   the real per-tool result with `teamai doctor` / `teamai hooks list`.
 
 ## Command cheat sheet (ground truth — do not invent flags)
 
@@ -115,9 +134,11 @@ teamai status                     # Show local vs team differences
 teamai list                       # List resources (skills|rules|docs|env|agents|hooks|mcp)
 teamai members                    # See team members (subcommand: teamai members list)
 teamai roles                      # Manage roles / resource namespaces
+teamai projects                   # Manage multiple projects from one repo (list|set|members)
 teamai packages                   # Install team-declared npm packages & Claude plugins
 teamai env                        # Manage shared team environment variables
-teamai contribute --file <p> --title <t>   # Contribute a knowledge doc to the team
+teamai dashboard                  # Open the AI coding session dashboard (web UI, default port 3721)
+teamai contribute --file <p> --title <t>   # Contribute a knowledge doc (usually via the teamai-share-learnings skill)
 ```
 
 Anything not in this cheat sheet: check `teamai <command> --help` before using it.
