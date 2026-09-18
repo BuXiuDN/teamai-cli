@@ -1,13 +1,17 @@
 # Scenario: Member — publish a reusable skill
 
 Goal: the user turns something they built into team knowledge everyone can pull.
+**Any member can do this — you do not need to be an admin.** The usual entry point
+is the user just asking in plain language, e.g. *"share this xxx skill with my
+team"* / *"把这个 xxx skill 分享给团队"* — then you run the publish for them.
 
 ## Which kind of contribution?
 
-- **A learning** (a lesson, a gotcha, how you solved something) → **use the
-  dedicated `teamai-share-learnings` skill**, not this flow. It summarizes the
-  current session and runs `teamai contribute` for you — far less work than writing
-  a doc by hand. (Step A below is only a fallback for when that skill isn't
+- **A learning** (a lesson, a gotcha, how you solved something) → this is
+  **automatic**: TeamAI prompts at the end of a session worth sharing and the
+  dedicated **`teamai-share-learnings`** skill takes over (it summarizes the
+  session and runs `teamai contribute`). The user does not come through this flow
+  for it. (Step A below is only a manual fallback for when that skill isn't
   available.)
 - **A reusable skill** (a `SKILL.md` others invoke) → author the skill, then
   `teamai push` (Step B — the main purpose of this reference).

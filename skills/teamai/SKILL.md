@@ -38,12 +38,18 @@ Usage examples (copy one to get started):
   📊  Anyone — open the team dashboard:
       /teamai Open the TeamAI dashboard
 
-  💡  Member — contribute what you learned:
-      (use the "teamai-share-learnings" skill — it summarizes this session for you)
+  💡  Member — share a skill with the team (just ask in plain language):
+      /teamai Share this <skill-name> skill with my team
 
   🗑️  Anyone — remove TeamAI from this machine:
       /teamai Uninstall TeamAI
 ```
+
+> **Sharing a session's learnings is automatic — not a menu choice.** TeamAI
+> prompts on its own at the end of a session that produced something worth sharing,
+> and the **`teamai-share-learnings`** skill takes over. The user does not invoke
+> `/teamai` for it. (Only appears when the admin left team sharing enabled — on by
+> default.)
 
 **If they DID describe a scenario**, match it to one row of the table below,
 then open that reference file and follow it step by step.
@@ -53,15 +59,17 @@ then open that reference file and follow it step by step.
 | Set up TeamAI for a team from scratch (create repo) | `references/setup-admin.md`              |
 | Join their team (with or without a repo URL)         | `references/join-member.md`              |
 | Manage a team: publish/update skills, rules, MCP, env, invite members | `references/manage-admin.md`  |
-| Publish a reusable skill they authored              | `references/contribute-member.md`        |
+| Share / publish a skill with the team ("share this xxx skill") — any member, not just admins | `references/contribute-member.md` |
 | Open the team dashboard (web UI)                    | run `teamai dashboard` (see cheat sheet) |
 | Remove / uninstall TeamAI from this machine         | `references/uninstall.md`                |
 
-> **Sharing session learnings is a separate skill.** If the user wants to
-> contribute a lesson / gotcha / knowledge doc from what they just did, point them
-> to the **`teamai-share-learnings`** skill — it summarizes the current session and
-> runs `teamai contribute` for them. `contribute-member.md` here is only for
-> publishing a **reusable skill** the user authored.
+> **Sharing session learnings is automatic, via a separate skill — do not route it
+> here.** TeamAI prompts on its own at the end of a session worth sharing, and the
+> **`teamai-share-learnings`** skill summarizes the session and runs
+> `teamai contribute`. The user does not ask for it through `/teamai`. (Only when
+> the admin left team sharing on — the default.) `contribute-member.md` here is for
+> a member **publishing a reusable skill** on request ("share this xxx skill with
+> my team").
 
 Choosing between "set up" and "join": a user **setting up a new team** becomes its
 admin and creates the repo; a user **joining an existing team** needs a repo URL

@@ -119,10 +119,27 @@ has no session-start hook, they run `teamai pull` manually.
 
 ## Capture a lesson learned
 
-To turn a tricky fix into team knowledge, use the dedicated **`teamai-share-learnings`**
-skill — it summarizes the current session and runs `teamai contribute` for you.
-(Publishing a **reusable skill** you authored is a different task — see
-`contribute-member.md`.)
+Turning a tricky fix into team knowledge is **automatic**: at the end of a session
+worth sharing, TeamAI prompts the member and the dedicated
+**`teamai-share-learnings`** skill summarizes the session and runs
+`teamai contribute`. Nobody has to invoke it by hand.
+(Publishing a **reusable skill** someone authored is a different task — any member
+can do it, see `contribute-member.md`.)
+
+### Turn the sharing prompt on or off (admin)
+
+The auto-share prompt is **on by default**. To disable it team-wide, set this in
+`teamai.yaml` and `teamai push`:
+
+```yaml
+sharing:
+  contributeHint:
+    enabled: false      # team-wide default; members can still override locally
+```
+
+Resolution order: `TEAMAI_CONTRIBUTE_HINT_DISABLED=1` env kill switch > a member's
+local override > this team setting > default (on). Turning it off here only removes
+the nudge; members can still contribute on request.
 
 ## Don't
 
