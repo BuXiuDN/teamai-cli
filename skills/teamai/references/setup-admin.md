@@ -80,8 +80,9 @@ the repository, then continue to the next step:
 | CNB      | https://cnb.cool             | https://cnb.cool/new/repos (org first: https://cnb.cool/new/groups) |
 
 > **Tencent TGit (工蜂):** you may skip creating the repo in the browser — in
-> Step 5, `teamai init` can create it for you once you are logged in via `gf`
-> (Step 3). git.woa.com is Tencent-internal only.
+> Step 5, `teamai init` can create it for you. It also installs the `gf` CLI and
+> handles the login on its own during init; you run no login command.
+> git.woa.com is Tencent-internal only.
 
 Tell the user to sign in, create an **empty** repo (suggested name
 `TeamAi-<team-name>`), and give you the resulting repo URL. Explain in one
@@ -98,21 +99,17 @@ computer only holds a synced copy — you never put business code in it."*
 Signing in on the website (Step 2c) is not enough — `teamai init` also needs the
 platform's CLI credentials. Have the user complete the matching CLI login:
 
-### Tencent TGit (工蜂) — authorize with `gf`
+### Tencent TGit (工蜂) — nothing to do here; `teamai init` handles it
 
 TeamAI supports git.woa.com natively as the `tgit` provider (it recognizes the
-host on its own — no `GITLAB_URL` needed). `teamai init` **auto-installs the `gf`
-CLI** (工蜂命令行工具) if it is missing, so you only need to authorize:
+host on its own — no `GITLAB_URL` needed). **You do not run any login command.**
+When you reach Step 5, `teamai init` **auto-downloads the `gf` CLI** (工蜂命令行
+工具) if it is missing and, if the user is not yet authorized, **launches the login
+for them during init** — the user just approves it in the browser / iOA when
+prompted. Skip straight to Step 4.
 
-```bash
-gf auth login
-```
-
-Approve it in the browser / iOA (device-code flow). Wait for the user to confirm
-they finished before continuing.
-
-(Headless/CI alternative: set `TGIT_TOKEN` — a git.woa.com Personal Access Token —
-instead of `gf auth login`.)
+(Headless/CI only: pre-set `TGIT_TOKEN` — a git.woa.com Personal Access Token — so
+init needs no interactive login.)
 
 ### CNB — install the CLI, authorize, then read the repo (in this order)
 
@@ -178,6 +175,10 @@ teamai init https://<platform>/<org>/<repo-name> --scope user
 
 If the repo does not exist yet, `init` offers to create it — accept the prompt.
 
+- **Tencent TGit (工蜂):** on the first init, `init` auto-downloads the `gf` CLI
+  and, if the user isn't authorized yet, opens the login mid-init — have the user
+  approve it in the browser / iOA when prompted. No separate login step, no
+  `GITLAB_URL`.
 - **CNB caveat:** a `cnb login` token **cannot create** an org or repo — that is
   exactly why the CNB flow has the user create the repo on the website first
   (Step 2c). If the org/repo is still missing here, `init` prints web links
