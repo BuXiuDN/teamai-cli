@@ -13,6 +13,10 @@ import { injectHooks } from '../hooks.js';
 // fixtures/hooks/<tool>.json were captured from the pre-refactor injector.
 // Any refactor of the injection engine MUST keep these byte-identical so that
 // already-installed machines see a zero-diff reconcile after a CLI upgrade.
+//
+// Windows skips: there a bare `bash` resolves to the WSL launcher, so the
+// injector renders an absolute Git Bash path instead — machine-specific, and
+// the Linux-captured fixtures cannot match it.
 const fixturesDir = path.resolve(__dirname, 'fixtures', 'hooks');
 
 const cases: Array<[string, string]> = [
@@ -23,7 +27,7 @@ const cases: Array<[string, string]> = [
   ['workbuddy', 'settings.json'],
 ];
 
-describe('hooks golden — built-in output is byte-identical to the captured baseline', () => {
+describe.skipIf(process.platform === 'win32')('hooks golden — built-in output is byte-identical to the captured baseline', () => {
   let tmp: string;
   beforeEach(async () => {
     tmp = await fse.mkdtemp(path.join(os.tmpdir(), 'hooks-golden-'));
