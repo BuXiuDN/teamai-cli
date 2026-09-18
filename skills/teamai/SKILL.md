@@ -1,13 +1,10 @@
 ---
 name: teamai
 description: >-
-  Interactive onboarding and daily-usage guide for TeamAI — the CLI that syncs a
-  team's AI skills, rules, docs, and env across AI coding tools. Invoke ONLY when
-  the user explicitly runs `/teamai` (or types "teamai" as an explicit command).
-  Do NOT auto-trigger from ordinary conversation, and do NOT activate just because
-  the words "team", "skill", "sync", or "onboard" appear. This skill guides users
-  who do not know Git through setting up, joining, managing, and contributing to a
-  team AI repo, running every command on their behalf.
+  Guide for TeamAI — the CLI that syncs a team's AI skills, rules, docs, and env
+  across AI coding tools (set up, join, manage, contribute, uninstall). Invoke
+  ONLY when the user explicitly runs `/teamai`. Do NOT auto-trigger from ordinary
+  conversation, even if words like "team", "skill", or "sync" appear.
 ---
 
 # TeamAI — Team AI Skills & Rules Sync

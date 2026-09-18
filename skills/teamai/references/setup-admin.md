@@ -24,9 +24,22 @@ through these sub-steps **in order**:
 
 ### 2a — Ask which platform they know
 
-Ask: *"Have you heard of / do you have an account on any of these — GitHub, GitLab,
-or CNB (cnb.cool)?"*
+**Tencent-internal first:** before asking, probe whether this machine is on the
+Tencent corporate network — a request to `git.woa.com` that returns the header
+`x-env: tgit` means Tencent TGit (工蜂) is reachable:
 
+```bash
+curl -sS -m 3 -D - -o /dev/null https://git.woa.com 2>/dev/null | grep -qi '^x-env:[[:space:]]*tgit' && echo "tgit: OK" || echo "tgit: unreachable"
+```
+
+If it prints `tgit: OK`, **list Tencent TGit (工蜂) first** and prefer it —
+TeamAI supports it natively (it auto-installs the `gf` CLI and detects
+`git.woa.com` on its own). Then ask:
+*"Have you heard of / do you have an account on any of these — Tencent TGit
+(工蜂), GitHub, GitLab, or CNB (cnb.cool)?"*
+
+- **Tencent TGit (工蜂)** — https://git.woa.com (Tencent-internal only; shown
+  first when the probe above says `tgit: OK`)
 - **GitHub** — https://github.com
 - **GitLab** — https://gitlab.com (or a self-hosted company GitLab)
 - **CNB** — https://cnb.cool
@@ -35,16 +48,20 @@ If they name one, use that platform and go to sub-step 2c.
 
 ### 2b — If they've heard of NONE, auto-probe reachability
 
-Test which sites this network can actually reach (probe each, ~3s timeout each):
+Test which sites this network can actually reach (probe each, ~3s timeout each).
+The TGit probe checks the `x-env: tgit` header, not just reachability:
 
 ```bash
+curl -sS -m 3 -D - -o /dev/null https://git.woa.com 2>/dev/null | grep -qi '^x-env:[[:space:]]*tgit' && echo "tgit: OK" || echo "tgit: unreachable"
 curl -sSf -m 3 -o /dev/null https://github.com  && echo "github: OK"  || echo "github: unreachable"
 curl -sSf -m 3 -o /dev/null https://gitlab.com  && echo "gitlab: OK"  || echo "gitlab: unreachable"
 curl -sSf -m 3 -o /dev/null https://cnb.cool     && echo "cnb: OK"     || echo "cnb: unreachable"
 ```
 
+- **TGit reachable (`tgit: OK`)** → prefer Tencent TGit (工蜂); it is the
+  Tencent-internal default.
 - **Exactly one reachable** → use that one.
-- **Several reachable** → list them and let the user pick one.
+- **Several reachable** → list them (TGit first when present) and let the user pick.
 - **None reachable** → stop. Tell the user to ask their own admin for a ready-made
   repo URL, then switch to `join-member.md`.
 
@@ -57,9 +74,14 @@ the repository, then continue to the next step:
 
 | Platform | Sign in / sign up            | Create a new repo (do this)        |
 |----------|------------------------------|------------------------------------|
+| Tencent TGit (工蜂) | https://git.woa.com | https://git.woa.com/projects/new |
 | GitHub   | https://github.com/login     | https://github.com/new             |
 | GitLab   | https://gitlab.com/users/sign_in | https://gitlab.com/projects/new |
 | CNB      | https://cnb.cool             | https://cnb.cool/new/repos (org first: https://cnb.cool/new/groups) |
+
+> **Tencent TGit (工蜂):** you may skip creating the repo in the browser — in
+> Step 5, `teamai init` can create it for you once you are logged in via `gf`
+> (Step 3). git.woa.com is Tencent-internal only.
 
 Tell the user to sign in, create an **empty** repo (suggested name
 `TeamAi-<team-name>`), and give you the resulting repo URL. Explain in one
@@ -75,6 +97,22 @@ computer only holds a synced copy — you never put business code in it."*
 
 Signing in on the website (Step 2c) is not enough — `teamai init` also needs the
 platform's CLI credentials. Have the user complete the matching CLI login:
+
+### Tencent TGit (工蜂) — authorize with `gf`
+
+TeamAI supports git.woa.com natively as the `tgit` provider (it recognizes the
+host on its own — no `GITLAB_URL` needed). `teamai init` **auto-installs the `gf`
+CLI** (工蜂命令行工具) if it is missing, so you only need to authorize:
+
+```bash
+gf auth login
+```
+
+Approve it in the browser / iOA (device-code flow). Wait for the user to confirm
+they finished before continuing.
+
+(Headless/CI alternative: set `TGIT_TOKEN` — a git.woa.com Personal Access Token —
+instead of `gf auth login`.)
 
 ### CNB — install the CLI, authorize, then read the repo (in this order)
 
@@ -180,7 +218,25 @@ other tools are skipped by design or not yet supported — this is CLI behaviour
 a broken setup. See `troubleshooting.md` ("Which tools actually get hooks") before
 worrying about a tool that shows as missing.
 
-## Step 7 — Hand off to members
+## Step 7 — Grant members repo access (required before they can join)
+
+TeamAI has **no permission model of its own** — it rides the Git platform's
+access control. After you initialize the repo, **each member must be granted
+read/write access to it on the platform website**, or their `teamai init` / `pull`
+/ `push` will fail with a permission error.
+
+Tell the admin (in their language) to add every member on the repo's website:
+
+- **Tencent TGit (工蜂):** repo → 成员管理 / Members → add each member with at
+  least **Developer** (read/write) access.
+- **GitHub:** repo → Settings → Collaborators → add with **Write**.
+- **GitLab:** repo → Settings → Members → add with **Developer** or above.
+- **CNB:** repo → members → grant read/write.
+
+Do this **before** handing off the invite line below — otherwise the member hits a
+"permission denied / can't clone" error on their very first step.
+
+## Step 8 — Hand off to members
 
 Everything you show here goes **in the user's language** (global rule 1). Only the
 `/teamai …` line, URLs, and commands stay verbatim.
@@ -202,7 +258,7 @@ carries counts + tool names only, on a separate branch of that same repo.)
    fresh session** in the AI tool. Right after init the skills folder may look
    empty — that is expected. To sync now, run `teamai pull`.
 
-## Step 8 — What's next (guide them, don't just list commands)
+## Step 9 — What's next (guide them, don't just list commands)
 
 Wrap up **in the user's own language** (global rule 1).
 
@@ -222,7 +278,7 @@ day-to-day work — they can keep letting the AI run things for them:
 Mention the underlying commands (`teamai push`, `teamai roles`, …) only as a note
 for users who *do* want them — the primary path is re-invoking `/teamai`.
 
-## Step 9 — Tell them how to leave (via the skill, not raw commands)
+## Step 10 — Tell them how to leave (via the skill, not raw commands)
 
 Finish by telling the user, **in their language**, that they can remove TeamAI any
 time — and that they don't need the command line to do it. They just re-invoke the
