@@ -27,6 +27,41 @@ TeamAI จัดการ Skills, Rules, MCP และความรู้ข�
 
 ## เริ่มต้นอย่างรวดเร็ว
 
+ส่งข้อความบรรทัดเดียวนี้ให้ AI ของคุณ:
+
+```text
+ช่วยติดตั้ง teamai skill ให้หน่อย: https://github.com/Tencent/teamai-cli/tree/main/skills/teamai , โหลด teamai skill แล้วตั้งค่า TeamAI ให้ทีมของฉันตั้งแต่ต้น
+```
+
+เมื่อตั้งค่า TeamAI แล้ว แค่คุยกับ `/teamai` skill ใน AI ของคุณได้เลย:
+
+**ตั้งค่าทีมตั้งแต่ต้น**
+
+```text
+/teamai ช่วยตั้งค่า TeamAI ให้ทีมของฉันตั้งแต่ต้น
+```
+
+**เข้าร่วมทีม**
+
+```text
+/teamai ช่วยพาฉันเข้าร่วม TeamAI ของทีม, URL รีโปคือ https://github.com/yourorg/yourrepo
+```
+
+**แชร์ skill ให้ทีม**
+
+```text
+/teamai ช่วยแชร์ xxx skill ให้ทีม
+```
+
+**เปิดแดชบอร์ด**
+
+```text
+/teamai เปิดแดชบอร์ด TeamAI
+```
+
+<details>
+<summary>ถนัดใช้คอมมานด์ไลน์มากกว่า? (ติดตั้งเอง)</summary>
+
 ### ติดตั้ง
 
 ```bash
@@ -53,6 +88,8 @@ teamai init https://github.com/yourorg/yourrepo --scope user
 ```
 
 เมื่อเริ่มต้นแล้ว ทุกเซสชัน AI จะดึง Skills / Rules และการอัปเดต Harness อื่นๆ ล่าสุดที่ผู้ดูแลเผยแพร่โดยอัตโนมัติ — ไม่ต้องซิงก์ด้วยตนเอง
+
+</details>
 
 > **คู่มือการใช้งานฉบับเต็ม:** [docs/usage-guide.md](docs/usage-guide.md) ([中文版](docs/usage-guide.zh-CN.md)) — ครอบคลุมตั้งแต่การสร้างทีมไปจนถึงการใช้งานประจำวัน
 
@@ -86,6 +123,7 @@ teamai init https://github.com/yourorg/yourrepo --scope user
     <tr><td>Claude Code</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>Codex</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>Cursor</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
+    <tr><td>GitHub Copilot CLI</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">—</td><td align="center">—</td></tr>
     <tr><td>CodeBuddy</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>WorkBuddy</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>OpenCode</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">—</td><td align="center">—</td></tr>
@@ -234,8 +272,8 @@ teamai recall maintenance --update-quality       # draft updates for stale skill
 |------------|---------|---------------|
 | **Usage** | `teamai digest` | สรุปทีมรายสัปดาห์ — ความสำเร็จใน 7 วัน, prompt, เวลาที่ใช้งาน, ต้นทุนโดยประมาณ, cache และแนวโน้มการแก้ไข รวมถึงยอดสะสมตลอดอายุการใช้งาน |
 | **Sessions** | `teamai session save` | สรุปรายเซสชันที่ล้างข้อมูลส่วนตัวแล้ว (ลำดับเครื่องมือ, รอบ prompt, การแทรกแซง) ซึ่งป้อน Session Highlights ของ digest |
-| **Dashboard** | `teamai dashboard` | แดชบอร์ดเว็บที่แสดงเซสชันสดและแนวโน้ม 7 วันในเครื่องเทียบกับ 7 วันก่อนหน้า |
-| **KB Health** | `teamai dashboard` → KB Health | หน้าในแดชบอร์ดที่รายงานการใช้งานและสุขภาพของคลังความรู้ — ความครอบคลุมตามประเภท, รายการที่ถูก recall บ่อย, รายการที่เงียบ, แนวโน้ม recall, ผลงานของผู้เขียน และคอนโซลบำรุงรักษา |
+| **Dashboard** | `teamai dashboard` | รวม Overview / Team Execution / Team Context / Team Improvement พร้อมเซสชันสดในเครื่อง แนวโน้ม 7 วัน ค่าใช้จ่ายโดยประมาณต่อเซสชัน ภาษาอังกฤษ/จีนตัวย่อ และธีมสว่าง/มืด/ตามระบบ |
+| **KB Health** | `teamai dashboard` → Team Context / Team Improvement | หน้าในแดชบอร์ดที่รายงานการใช้งานและสุขภาพของคลังความรู้ — ความครอบคลุมตามประเภท, รายการที่ถูก recall บ่อย, รายการที่เงียบ, แนวโน้ม recall, ผลงานของผู้เขียน และคอนโซลบำรุงรักษา |
 
 ## คำสั่ง
 

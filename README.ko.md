@@ -27,6 +27,41 @@ TeamAI에 기여해 주신 모든 분께 감사합니다!
 
 ## 빠른 시작
 
+아래 한 문장을 AI 도구에 보내세요:
+
+```text
+teamai skill을 설치해줘: https://github.com/Tencent/teamai-cli/tree/main/skills/teamai , teamai skill을 로드한 다음 우리 팀의 TeamAI를 처음부터 구축해줘.
+```
+
+TeamAI를 설정한 뒤에는 AI 도구에서 `/teamai` skill에게 말만 걸면 됩니다:
+
+**팀을 처음부터 구축**
+
+```text
+/teamai 우리 팀의 TeamAI를 처음부터 구축해줘
+```
+
+**팀 참여**
+
+```text
+/teamai 우리 팀의 TeamAI에 참여하고 싶어, 저장소 URL은 https://github.com/yourorg/yourrepo
+```
+
+**skill을 팀에 공유**
+
+```text
+/teamai xxx skill을 팀에 공유해줘
+```
+
+**대시보드 열기**
+
+```text
+/teamai TeamAI 대시보드 열어줘
+```
+
+<details>
+<summary>명령줄이 더 편한가요? (수동 설치)</summary>
+
 ### 설치
 
 ```bash
@@ -53,6 +88,8 @@ teamai init https://github.com/yourorg/yourrepo --scope user
 ```
 
 초기화가 끝나면 관리자가 배포한 최신 Skills / Rules 및 기타 Harness 업데이트가 매 AI 세션에서 자동으로 반영됩니다. 수동 동기화는 필요 없습니다.
+
+</details>
 
 > **전체 사용 가이드:** [docs/usage-guide.md](docs/usage-guide.md) ([中文版](docs/usage-guide.zh-CN.md)) — 팀 생성부터 일상 사용까지 모두 다룹니다.
 
@@ -86,6 +123,7 @@ teamai init https://github.com/yourorg/yourrepo --scope user
     <tr><td>Claude Code</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>Codex</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>Cursor</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
+    <tr><td>GitHub Copilot CLI</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">—</td><td align="center">—</td></tr>
     <tr><td>CodeBuddy</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>WorkBuddy</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>OpenCode</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">—</td><td align="center">—</td></tr>
@@ -234,8 +272,8 @@ teamai recall maintenance --update-quality       # draft updates for stale skill
 |------------|---------|---------------|
 | **Usage** | `teamai digest` | 주간 팀 digest — 7일간의 성공률, prompt, 활성 시간, 추정 비용, cache, 수정 추세와 누적 합계. |
 | **Sessions** | `teamai session save` | 개인정보를 제거한 세션별 요약(도구 순서, prompt 턴, 개입)으로 digest의 Session Highlights에 들어갑니다. |
-| **Dashboard** | `teamai dashboard` | 실시간 세션과, 직전 7일 대비 로컬 7일 추세를 보여주는 웹 dashboard. |
-| **KB Health** | `teamai dashboard` → KB Health | 지식 베이스 사용량과 건강 상태를 보여주는 내장 dashboard 페이지 — 유형별 커버리지, 상위 recall 항목, 침묵 항목, recall 추세, 작성자 기여, maintenance 콘솔. |
+| **Dashboard** | `teamai dashboard` | Overview / Team Execution / Team Context / Team Improvement 통합 화면. 로컬 실시간 세션, 7일 추세, 세션당 예상 비용, 영어/중국어 간체 및 밝게/어둡게/시스템 테마를 지원합니다. |
+| **KB Health** | `teamai dashboard` → Team Context / Team Improvement | 지식 베이스 사용량과 건강 상태를 보여주는 내장 dashboard 페이지 — 유형별 커버리지, 상위 recall 항목, 침묵 항목, recall 추세, 작성자 기여, maintenance 콘솔. |
 
 ## 명령어
 

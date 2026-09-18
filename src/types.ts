@@ -23,12 +23,12 @@ export const ToolPathsSchema = z.object({
    * <root>/.mcp.json, breaking the usual `.<tool>/<file>` convention. */
   mcpProject: z.string().optional(),
   /**
-   * User-scope path overrides for skills/rules/agents. Most tools store their
+   * User-scope path overrides for tool resources. Most tools store their
    * user-scope resources at the same `.<tool>/<resource>` relative path as their
    * project-scope ones, so this is omitted. OpenCode is the exception: its
    * project-scope config lives at `<root>/.opencode/...` but its user-scope config
    * lives at `~/.config/opencode/...`, a different prefix entirely. When set and the
-   * active scope is `user`, these values replace the base skills/rules/agents paths.
+   * active scope is `user`, these values replace the corresponding base paths.
    */
   userScope: z
     .object({
@@ -36,6 +36,7 @@ export const ToolPathsSchema = z.object({
       rules: z.string().optional(),
       agents: z.string().optional(),
       hooks: z.string().optional(),
+      claudemd: z.string().optional(),
     })
     .optional(),
 });
@@ -267,6 +268,21 @@ export const TeamaiConfigSchema = z.object({
   /** Run `git submodule update --init` on pull so skills distributed as git
    * submodules are populated and kept current. Off by default. */
   submodules: z.boolean().optional(),
+  /** Team-owned scripts the CLI runs at defined points of a pull — repo-committed
+   * entrypoints, distinct from `sharing.hooks.requireTeamScripts` (the
+   * `~/.teamai/team-scripts/` trust boundary for hook commands). Every entry is
+   * optional, and older CLIs strip the unknown section instead of rejecting the
+   * file — so a team repo can adopt one before its members upgrade. */
+  scripts: z.object({
+    /** Run at the end of a pull, after every sync step (resources,
+     * hooks, MCP, reports) has finished. `path` is a Node entrypoint (`.mjs`,
+     * `.js`, `.cjs`) relative to the team repo root, and must resolve inside it:
+     * a symlink leaving the clone is rejected, since this script runs on every
+     * member's machine. */
+    postPull: z.object({
+      path: z.string().min(1),
+    }).optional(),
+  }).optional(),
   // MCP paths are only set for tools whose config location has been verified.
   // Tools left without `mcp` are skipped by MCP sync rather than guessed at, so a
   // wrong guess can never create a junk config file on a user's machine.
@@ -292,7 +308,14 @@ export const TeamaiConfigSchema = z.object({
       rules: '.github/instructions',
       agents: '.github/agents',
       hooks: '.github/hooks/teamai.json',
-      userScope: { skills: 'skills', rules: 'instructions', agents: 'agents', hooks: 'hooks/teamai.json' },
+      claudemd: '.github/copilot-instructions.md',
+      userScope: {
+        skills: 'skills',
+        rules: 'instructions',
+        agents: 'agents',
+        hooks: 'hooks/teamai.json',
+        claudemd: 'copilot-instructions.md',
+      },
     },
     // JoyCode: skills, rules (.mdc), and subagents are synced to .joycode/.
     // JoyCode currently does not provide a lifecycle hooks system or startup
@@ -443,6 +466,14 @@ export const LocalConfigSchema = z.object({
   enabledAgents: z.array(z.string()).optional(),
   /** Tools explicitly excluded from all teamai sync (set by `uninstall --agent`). Removed again by `init --agent`. */
   disabledAgents: z.array(z.string()).optional(),
+  /**
+   * Per-machine map from a gateway/proxy model alias to a known Claude model
+   * name, so cost/cache estimation works when the transcript records an opaque
+   * alias (e.g. `ep-qxst1hw4`) instead of `claude-opus-...`. The value must
+   * contain a token the price table matches (opus / sonnet / haiku / fable /
+   * mythos + version). Unset means "match the raw model name only".
+   */
+  modelAliases: z.record(z.string(), z.string()).optional(),
 });
 
 /**
@@ -720,6 +751,12 @@ export interface GlobalOptions {
   claude?: boolean;
   verbose?: boolean;
   silent?: boolean;
+  /**
+   * A human ran the command (the CLI sets it from !--silent): background work
+   * may attach to the user's terminal and run on unawaited. Absent = headless
+   * (hook) caller: everything must be waited out and captured instead.
+   */
+  interactive?: boolean;
   /**
    * Force full sync even when repo HEAD matches lastPullRev (`pull`), or skip
    * the confirmation prompt (`remove`).
@@ -1124,10 +1161,34 @@ export const CORRECTION_KEYWORDS = [
 export const INTERVENTION_SCAN_MAX_BYTES = 50 * 1024 * 1024;
 /** Marker that prefixes a user-interrupt entry in the Claude Code transcript. */
 export const TRANSCRIPT_INTERRUPT_PREFIX = '[Request interrupted by user';
-/** Prefixes of system-injected user messages that are NOT genuine human prompts. */
+/** Prefixes of system-injected user messages that are NOT genuine human prompts.
+ *  These arrive as user-role transcript entries / UserPromptSubmit payloads but
+ *  are harness or hook injections (background-task completions, system reminders,
+ *  interrupt markers), so they must not be counted as human turns or shown as prompts. */
 export const TRANSCRIPT_SYSTEM_PREFIXES = [
   '<task-notification>',
+  '<system-reminder>',
+  TRANSCRIPT_INTERRUPT_PREFIX,
 ];
+
+/**
+ * Return the genuine human text from a raw prompt/user-entry, stripping any
+ * trailing system-injected block (a real prompt sometimes has a task-notification
+ * or system-reminder appended when the user typed mid-turn). Returns '' when the
+ * whole message is injected content (no human text before the first marker).
+ */
+export function stripInjectedPrompt(raw: string): string {
+  const trimmed = raw.trimStart();
+  // Pure injection: the message itself starts with a marker → no human text.
+  if (TRANSCRIPT_SYSTEM_PREFIXES.some((p) => trimmed.startsWith(p))) return '';
+  // Mixed: cut at the earliest injected-block marker that appears later.
+  let cut = raw.length;
+  for (const marker of TRANSCRIPT_SYSTEM_PREFIXES) {
+    const i = raw.indexOf(marker);
+    if (i >= 0 && i < cut) cut = i;
+  }
+  return raw.slice(0, cut).trim();
+}
 /** Substrings that mark a tool_result as a user rejection (permission deny). */
 export const TRANSCRIPT_REJECT_MARKERS = [
   'The tool use was rejected',
@@ -1490,8 +1551,8 @@ export function isAgentExcluded(
  * one exception is OpenCode, whose user-scope config lives under
  * `~/.config/opencode/` (a different prefix from its project `<root>/.opencode/`);
  * its `userScope` block carries those paths and is spliced in only when the active
- * scope is `user`. Callers that iterate `toolPaths` for skills/rules/agents should
- * iterate the result of this function instead, so the correct scope path is used.
+ * scope is `user`. Callers that iterate `toolPaths` for scoped resources should
+ * iterate the result of this function instead, so the correct path is used.
  *
  * MCP is untouched here: its two scopes are already distinct fields
  * (`mcp` / `mcpProject`), resolved separately in the reconcile engine.
@@ -1514,6 +1575,7 @@ export function scopedToolPaths(
       ...(us.rules !== undefined ? { rules: us.rules } : {}),
       ...(us.agents !== undefined ? { agents: us.agents } : {}),
       ...(us.hooks !== undefined ? { hooks: us.hooks } : {}),
+      ...(us.claudemd !== undefined ? { claudemd: us.claudemd } : {}),
     };
   }
   return out;

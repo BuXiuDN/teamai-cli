@@ -27,6 +27,41 @@ TeamAI に貢献してくださったみなさんに感謝します。
 
 ## クイックスタート
 
+次の一文を AI ツールに送るだけ:
+
+```text
+teamai skill をインストールして: https://github.com/Tencent/teamai-cli/tree/main/skills/teamai , teamai skill を読み込み、チームの TeamAI をゼロから構築して。
+```
+
+TeamAI をセットアップしたら、AI ツールで `/teamai` skill に話しかけるだけ:
+
+**チームをゼロから構築**
+
+```text
+/teamai チームの TeamAI をゼロから構築して
+```
+
+**チームに参加**
+
+```text
+/teamai チームの TeamAI に参加したい、リポジトリ URL は https://github.com/yourorg/yourrepo
+```
+
+**skill をチームに共有**
+
+```text
+/teamai xxx skill をチームに共有して
+```
+
+**ダッシュボードを開く**
+
+```text
+/teamai TeamAI ダッシュボードを開いて
+```
+
+<details>
+<summary>コマンドラインの方が好みですか？（手動セットアップ）</summary>
+
 ### インストール
 
 ```bash
@@ -53,6 +88,8 @@ teamai init https://github.com/yourorg/yourrepo --scope user
 ```
 
 初期化後は、管理者が公開した最新の skills / rules などの Harness 更新が、AI セッション開始時に自動で取り込まれます。手動同期は不要です。
+
+</details>
 
 > **完全な利用ガイド:** [docs/usage-guide.md](docs/usage-guide.md)（[中文版](docs/usage-guide.zh-CN.md)）— チーム作成から日常利用までをカバーします。
 
@@ -86,6 +123,7 @@ teamai init https://github.com/yourorg/yourrepo --scope user
     <tr><td>Claude Code</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>Codex</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>Cursor</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
+    <tr><td>GitHub Copilot CLI</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">—</td><td align="center">—</td></tr>
     <tr><td>CodeBuddy</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>WorkBuddy</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
     <tr><td>OpenCode</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">—</td><td align="center">—</td><td align="center">—</td></tr>
@@ -234,8 +272,8 @@ teamai recall maintenance --update-quality       # draft updates for stale skill
 |------|----------|----------|
 | **Usage** | `teamai digest` | チームの週次 digest — 直近 7 日の成功率、prompt、アクティブ時間、推定コスト、cache、訂正の傾向と、累計値。 |
 | **Sessions** | `teamai session save` | プライバシーを除去したセッション要約（ツール列、prompt ターン、介入）。digest の Session Highlights の入力になります。 |
-| **Dashboard** | `teamai dashboard` | ライブセッションと、直近 7 日をその前の 7 日と比較したローカルトレンドを示す Web dashboard。 |
-| **KB Health** | `teamai dashboard` → KB Health | 組み込みの dashboard ページ。ナレッジベースの利用と健全性（タイプ別カバレッジ、よく recall されるエントリ、沈黙エントリ、recall トレンド、作者の貢献、メンテナンスコンソール）を報告します。 |
+| **Dashboard** | `teamai dashboard` | Overview / Team Execution / Team Context / Team Improvement を統合。本機のライブセッション、7 日間の傾向、セッション当たり推定コスト、英語/簡体字中国語、ライト/ダーク/システムテーマに対応。 |
+| **KB Health** | `teamai dashboard` → Team Context / Team Improvement | 組み込みの dashboard ページ。ナレッジベースの利用と健全性（タイプ別カバレッジ、よく recall されるエントリ、沈黙エントリ、recall トレンド、作者の貢献、メンテナンスコンソール）を報告します。 |
 
 ## コマンド
 
