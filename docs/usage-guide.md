@@ -1361,6 +1361,8 @@ teamai hooks remove    # Remove
 
 The inject and remove commands only touch tools you actually have installed (i.e. whose `~/.<tool>/` root directory already exists). They never create root directories for tools listed in `toolPaths` but not installed.
 
+On Windows, the built-in dispatch commands reference Git Bash by absolute path — standard install locations first, then the `HKLM\SOFTWARE\GitForWindows` registry as fallback — so they never resolve to the WSL `bash.exe` launcher; if Git Bash cannot be found they degrade to bare `bash`.
+
 > **Codex trust gate** — Codex (the OpenAI / ChatGPT Codex app, tool id `codex`) gates non-managed hooks behind an explicit user trust step. After teamai writes `~/.codex/hooks.json`, Codex may skip a newly added or changed hook until you review/trust it in `/hooks` or Settings → Hooks. `teamai hooks inject` and `teamai doctor` print a reminder when Codex hooks are installed; teamai never edits Codex's `[hooks.state]` to auto-trust — trusting is left to you.
 
 ### Team Hooks Declaration
@@ -1460,7 +1462,7 @@ Kiro is available as a built-in target. TeamAI deploys skills, rules, and subage
 ZCode is available as a built-in target. Skills deploy to `.zcode/skills/` (ZCode also reads the central `~/.agents/skills/`, which the `agents` entry covers), and subagents deploy as Claude-style Markdown to `.zcode/agents/`. Hooks are merged into the shared `~/.zcode/cli/config.json`, preserving unrelated keys such as plugin state. Two ZCode specifics the writer handles for you:
 
 - Config-file hooks are **disabled by default** in ZCode — TeamAI forces `hooks.enabled: true` so the entries it writes actually fire.
-- Hook entries use the `process` type (`bash -lc <dispatch>` as an argv vector) rather than a shell string, which sidesteps Windows PATH resolution landing on the WSL `bash.exe` instead of Git Bash.
+- Hook entries use the `process` type (`bash -lc <dispatch>` as an argv vector) rather than a shell string; the shell-string targets instead sidestep the same Windows trap by naming Git Bash absolutely in their commands (see the Hooks section).
 
 These paths are verified against the ZCode desktop app: profiles created in its Subagents settings page land in `~/.zcode/agents/*.md`, and files placed there (e.g. by TeamAI) show up in the page's installed list. MCP servers deploy to `~/.agents/mcp.json` (user scope, Claude `mcpServers` shape — the same file ZCode's own MCP settings page reads). Project scope is not wired: ZCode stores workspace MCP under a different key (`mcp.servers` inside `.zcode/config.json`), which the Claude writer cannot emit. ZCode has no user-level rules directory convention, so rules are not synced.
 
