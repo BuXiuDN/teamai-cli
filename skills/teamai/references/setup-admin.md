@@ -99,14 +99,36 @@ computer only holds a synced copy — you never put business code in it."*
 Signing in on the website (Step 2c) is not enough — `teamai init` also needs the
 platform's CLI credentials. Have the user complete the matching CLI login:
 
-### Tencent TGit (工蜂) — nothing to do here; `teamai init` handles it
+### Tencent TGit (工蜂) — `teamai init` handles login; gf install is automatic
 
 TeamAI supports git.woa.com natively as the `tgit` provider (it recognizes the
 host on its own — no `GITLAB_URL` needed). **You do not run any login command.**
 When you reach Step 5, `teamai init` **auto-downloads the `gf` CLI** (工蜂命令行
 工具) if it is missing and, if the user is not yet authorized, **launches the login
 for them during init** — the user just approves it in the browser / iOA when
-prompted. Skip straight to Step 4.
+prompted. In the normal flow you can skip straight to Step 4.
+
+**Optional — pre-install `gf` yourself** (only if you want it ready before init,
+e.g. a flaky network you'd rather retry separately). Use the **same source, path,
+and check `teamai init` uses** — do not invent your own URL. `${TEAMAI_HOME}` is
+`~/.teamai` unless overridden:
+
+```bash
+# 1. pick the tarball for this machine's OS/arch (darwin|linux × x64|arm64)
+os=$(uname -s | tr '[:upper:]' '[:lower:]')          # darwin | linux
+arch=$(uname -m); [ "$arch" = "x86_64" ] && arch=x64; [ "$arch" = "aarch64" ] && arch=arm64
+dir="${TEAMAI_HOME:-$HOME/.teamai}/gf"
+
+# 2. download + extract from the Tencent-internal mirror (same URL teamai uses)
+mkdir -p "$dir"
+curl -fsSL "http://mirrors.tencent.com/repository/generic/gongfeng-cli/files/channels/stable/gf-${os}-${arch}.tar.gz" | tar xz -C "$dir"
+
+# 3. verify exactly as teamai does: the binary exists and is executable
+test -x "$dir/gf/bin/gf" && echo "gf installed OK" || echo "gf install FAILED"
+```
+
+If this fails, just skip it — `teamai init` will install `gf` the same way on its
+own. Only macOS and Linux, on x64 or arm64, are supported.
 
 (Headless/CI only: pre-set `TGIT_TOKEN` — a git.woa.com Personal Access Token — so
 init needs no interactive login.)

@@ -42,7 +42,9 @@ Match the login to the URL's host (do NOT create a second repo):
 - **`git.woa.com/...`** (Tencent TGit / 工蜂) → **nothing to run.** `teamai init`
   (Step 4) auto-downloads the `gf` CLI if missing and launches the login for the
   user during init — they just approve it in the browser / iOA when prompted. No
-  `GITLAB_URL` needed. (Headless only: pre-set `TGIT_TOKEN`.)
+  `GITLAB_URL` needed. (Optional: to pre-install `gf` yourself first, use the same
+  download/verify commands as `setup-admin.md`. Headless only: pre-set
+  `TGIT_TOKEN`.)
 - **`cnb.cool/...`** → install the CNB CLI, then authorize, in this order:
   1. `npm install -g @cnbcool/cnb-cli`
   2. `cnb login` — have the user approve it in the browser (OAuth2 device flow);
